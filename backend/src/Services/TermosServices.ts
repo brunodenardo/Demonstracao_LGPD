@@ -13,4 +13,21 @@ class TermosServices{
         const termos =  await this.termosRepository.create(data)
         return await this.termosRepository.save(termos)
     }
+
+    public async buscarTermoPorId(idTermo:number):Promise<TermosUso>{
+        const termo = await this.termosRepository.findOne({where:{id:idTermo}})
+        if(termo){
+            return termo
+        }
+        throw("Termo não encontrado")
+    }
+
+    public async desativarTermo(idTermo:number):Promise<void>{
+        const termo = await this.buscarTermoPorId(idTermo)
+        termo.ativo = false
+        await this.termosRepository.save(termo)
+    }
+
 }
+
+export default new TermosServices()

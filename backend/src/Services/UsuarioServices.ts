@@ -4,9 +4,11 @@ import { Usuario } from "../entities/Usuario";
 import bcrypt from "bcrypt"
 import TokenServices from "./TokenServices";
 import PayloadToken from "../Types/PayloadToken";
+import { TermosUso } from "../entities/TemosUso";
 
 class UsuarioServices {
     private usuarioRepository: Repository<Usuario>;
+    private termosRepository:Repository<TermosUso>;
 
     constructor() {
         // Inicializa o repositório do TypeORM para a entidade Usuario
@@ -74,6 +76,17 @@ class UsuarioServices {
 
         await this.usuarioRepository.remove(usuario);
         return true;
+    }
+
+    public async conferirTermos(id:number): Promise<TermosUso[]>{
+        const usuario = await this.buscarUsuarioPorId(id)
+        const termosAtivos = await this.termosRepository.find({where:{ativo:true}})
+        var termosNaoAceitosAinda:TermosUso[] = []
+        termosAtivos.forEach(termo=>{
+            if(!usuario?.termos_uso.includes(termo))
+                termosNaoAceitosAinda.push(termo)
+        })
+        return termosNaoAceitosAinda
     }
 }
 
