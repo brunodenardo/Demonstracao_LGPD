@@ -9,4 +9,8 @@ export const endpoints = {
         register: "/user/cadastrar",
         login: "user/login",
     },
+    user: {
+        listOne: (id: string) => `/user/lista/${id}`,
+        update: "/user/atualiza",
+    }
 }

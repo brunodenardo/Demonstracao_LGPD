@@ -1,6 +1,6 @@
 import { api, endpoints } from "@/lib/api-client";
 
-export async function register(data: UserRegister) {
+export async function register(data: User) {
     return await api.post(endpoints.auth.register, data);
 }
 

@@ -5,6 +5,7 @@ import TokenServices from "../Services/TokenServices";
 const UserRouter = Router()
 
 UserRouter.post("/login", UserController.login)
+UserRouter.post("/cadastrar", UserController.cadastrarUsuario)
 UserRouter.get("/lista/:id", TokenServices.autenticarJWT, UserController.listaUsuarioUnico)
 UserRouter.get("/lista/todos", TokenServices.autenticarJWT, UserController.listartodosUsuarios)
 UserRouter.put("/atualiza", TokenServices.autenticarJWT, UserController.atualizacaoUsuario)

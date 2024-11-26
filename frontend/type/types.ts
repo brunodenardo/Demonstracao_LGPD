@@ -1,4 +1,4 @@
-interface UserRegister {
+interface User {
     nome_completo: string;
     data_nascimento: string;
     senha: string;
