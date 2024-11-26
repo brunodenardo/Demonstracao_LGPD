@@ -3,6 +3,7 @@ import UsuarioServices from "../Services/UsuarioServices";
 import bcrypt from "bcrypt"
 import { Usuario } from "../entities/Usuario";
 import AtualizacaoUsuarioDTO from "../DTOs/AtualizacaoUsuarioDTO";
+import { TipoUsuario } from "../Types/TipoUsuario";
 
 class UserController{
 
@@ -11,7 +12,7 @@ class UserController{
         try{
             const result = await UsuarioServices.login(senha, email)
             if(result){
-                res.send({token:result})
+                res.send(result)
                 return;
             }
             res.status(400).send("Usuário não encontrado")
@@ -22,12 +23,6 @@ class UserController{
     }
 
     async listartodosUsuarios(req:Request, res:Response){
-        console.log(res.locals.user)
-        const tipoUsuario = res.locals.user.tipo_usuario
-        if(tipoUsuario != "ADMINISTRADOR"){
-            res.status(403).send("Ação não permitida")
-            return;
-        }
         try{
             const listaUsuarios = await UsuarioServices.listarUsuarios()
             res.send(listaUsuarios)
@@ -35,6 +30,23 @@ class UserController{
             res.status(500).send({mensagem: "Servidor não conseguiu completar o processo", erro:error})
         }
         return;
+    }
+
+    async listaUsuarioUnico(req:Request, res:Response){
+        try{
+            
+            const id = parseInt(req.params.id)
+            if(res.locals.user.tipo_usuario == TipoUsuario.adm || res.locals.user.id_usuario == id){
+                const usuario = await UsuarioServices.buscarUsuarioPorId(id)
+                res.send(usuario)
+            } else{
+                res.status(403).send("Ação não permitida")
+            }
+                
+            
+        } catch(error){
+            res.status(400).send({mensagem: "Busca não foi realizada", erro:error})
+        }
     }
 
     async cadastrarUsuario(req:Request, res:Response){

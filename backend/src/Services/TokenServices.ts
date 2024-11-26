@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
 import PayloadToken from "../Types/PayloadToken";
 import { Request, Response, NextFunction } from "express";
+import { TipoUsuario } from "../Types/TipoUsuario";
 
 const JWT_SECRET = process.env.JWT_SECRET || "segredo_token"
 
@@ -27,6 +28,15 @@ class TokenServices {
         } catch (error) {
             res.status(403).json({ message: "Token inválido!" });
             return; // Adicione `return` aqui também
+        }
+    }
+
+    public autenticarPapelAdm(req: Request, res:Response, next: NextFunction): void{
+        if(res.locals.user.tipo == TipoUsuario.adm){
+            next();
+        } else{
+            res.status(403).json({message:"Ação não permitida"})
+            return;
         }
     }
 

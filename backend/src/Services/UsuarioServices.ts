@@ -43,7 +43,7 @@ class UsuarioServices {
         }
         const payload: PayloadToken = { id_usuario: usuario.id_usuario, tipo_usuario: usuario.tipo, ativo: usuario.ativo }
         const token = TokenServices.gerarToken(payload)
-        return token
+        return {token:token, usuarioAtivo:usuario.ativo}
     }
 
     public async atualizarUsuario(id: number, data: Partial<Usuario>): Promise<Usuario | null> {

@@ -4,8 +4,12 @@ import TokenServices from "../Services/TokenServices";
 
 const UserRouter = Router()
 
-UserRouter.get("/listaUsuarios", TokenServices.autenticarJWT, UserController.listartodosUsuarios)
 UserRouter.post("/login", UserController.login)
-UserRouter.post("/cadastrar", UserController.cadastrarUsuario)
+UserRouter.get("/lista/:id", TokenServices.autenticarJWT, UserController.listaUsuarioUnico)
+UserRouter.get("/lista/todos", TokenServices.autenticarJWT, UserController.listartodosUsuarios)
+UserRouter.put("/atualiza", TokenServices.autenticarJWT, UserController.atualizacaoUsuario)
+UserRouter.put("/desativa", TokenServices.autenticarJWT, UserController.desativarUsuario)
+UserRouter.put("/ativa", TokenServices.autenticarJWT, UserController.desativarUsuario)
+UserRouter.delete("/esquece", TokenServices.autenticarJWT, UserController.esquecerUsuario)
 
 export default UserRouter
