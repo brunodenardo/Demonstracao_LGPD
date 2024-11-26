@@ -80,6 +80,30 @@ class UserController{
         return;
     }
 
+    async desativarUsuario(req:Request, res:Response){
+        const id = res.locals.usuario.id_usuario
+        const usuario:Partial<Usuario> = {ativo:false}
+        try{
+            await UsuarioServices.atualizarUsuario(id, usuario)
+            res.status(200)
+        } catch(error){
+            res.status(500).send({mensagem: "Servidor não conseguiu completar o processo", erro:error})
+        }
+        return;
+    }
+
+    async ativaUsuario(req:Request, res:Response){
+        const id = res.locals.usuario.id_usuario
+        const usuario:Partial<Usuario> = {ativo:true}
+        try{
+            await UsuarioServices.atualizarUsuario(id, usuario)
+            res.status(200)
+        } catch(error){
+            res.status(500).send({mensagem: "Servidor não conseguiu completar o processo", erro:error})
+        }
+        return;
+    }
+
 }
 
 export default new UserController()
