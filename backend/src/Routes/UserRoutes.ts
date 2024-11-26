@@ -6,5 +6,6 @@ const UserRouter = Router()
 
 UserRouter.get("/listaUsuarios", TokenServices.autenticarJWT, UserController.listartodosUsuarios)
 UserRouter.post("/login", UserController.login)
+UserRouter.post("/cadastrar", UserController.cadastrarUsuario)
 
 export default UserRouter
