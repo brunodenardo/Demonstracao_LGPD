@@ -3,28 +3,28 @@
 import { Button } from "@/components/button";
 import { Input } from "@/components/input";
 import { useEffect, useState } from "react";
-import { getUserById, updateUser } from "../api/user";
+import { getUser, updateUser } from "../api/user";
 import Link from "next/link";
 
-export default function UserEditForm({ userId }: { userId: string }) {
-    const [usuario, setUsuario] = useState({
+export default function UserEditForm() {
+    const [usuario, setUsuario] = useState<User>({
         nome_completo: "",
         data_nascimento: "",
-        senha: "",
-        email: "",
         cpf: "",
         cep: "",
+        email: "",
+        senha: ""   
     });
 
-    // useEffect(() => {
-    //     async function fetchUser() {
-    //         const user = await getUserById(userId);
-    //         setUsuario(user);
-    //     }
+    useEffect(() => {
+        async function fetchUser() {
+            const user = await getUser();
+            user.data_nascimento = new Date(user.data_nascimento).toISOString().split('T')[0];
+            setUsuario(user);
+        }
 
-    //     if(!userId) return;
-    //     fetchUser();
-    // }, [userId])
+        fetchUser();
+    }, [])
 
     function handleChange(e: any) {
         const { name, value } = e.target;
@@ -37,7 +37,9 @@ export default function UserEditForm({ userId }: { userId: string }) {
     async function handleSubmit(e: any) {
         e.preventDefault();
         
-        await updateUser(userId, usuario);
+        await updateUser(usuario)
+            .then(() => window.alert("Dados atualizado com sucesso"))
+            .catch(() => window.alert("Erro ao atualizar os seus dados"));
     }
 
     return (
@@ -65,6 +67,7 @@ export default function UserEditForm({ userId }: { userId: string }) {
                     name="cpf"
                     value={usuario.cpf}
                     onChange={handleChange}
+                    disabled
                 />
                 <Input 
                     label="CEP" 
@@ -79,6 +82,7 @@ export default function UserEditForm({ userId }: { userId: string }) {
                     name="email"
                     value={usuario.email}
                     onChange={handleChange}
+                    disabled
                 />
                 <Input 
                     label="Senha" 

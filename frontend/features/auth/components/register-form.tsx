@@ -4,8 +4,11 @@ import { Button } from "@/components/button";
 import { Input } from "@/components/input";
 import { useState } from "react";
 import { register } from "../api/auth";
+import { useRouter } from "next/navigation";
 
 export default function RegisterForm() {
+    const router = useRouter();
+
     const [usuario, setUsuario] = useState({
         nome_completo: "",
         data_nascimento: "",
@@ -25,7 +28,15 @@ export default function RegisterForm() {
 
     async function handleRegister(e: any) {
         e.preventDefault();
-        await register(usuario);
+        await register(usuario)
+            .then(() => {
+                window.alert("Usuário cadastrado com sucesso!");
+                router.push("/login");
+            })
+            .catch((error) => {
+                window.alert("Erro ao cadastrar usuário!");
+                console.log(error)
+            });
     }
 
     return (
