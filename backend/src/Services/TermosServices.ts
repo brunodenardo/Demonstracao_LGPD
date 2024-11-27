@@ -1,4 +1,4 @@
-import { Repository } from "typeorm";
+import { Between, IsNull, LessThan, MoreThan, Repository } from "typeorm";
 import { AppDataSource } from "../data-source";
 import { TermosUso } from "../entities/TemosUso";
 
@@ -14,6 +14,10 @@ class TermosServices{
         return await this.termosRepository.save(termos)
     }
 
+    public async buscarTermosAtivos():Promise<TermosUso[]>{
+        return await this.termosRepository.find({where:{ativo:true}})
+    }
+
     public async buscarTermoPorId(idTermo:number):Promise<TermosUso>{
         const termo = await this.termosRepository.findOne({where:{id:idTermo}})
         if(termo){
@@ -22,10 +26,37 @@ class TermosServices{
         throw("Termo não encontrado")
     }
 
-    public async desativarTermo(idTermo:number):Promise<void>{
+    public async desativarTermo(idTermo:number):Promise<TermosUso>{
         const termo = await this.buscarTermoPorId(idTermo)
         termo.ativo = false
-        await this.termosRepository.save(termo)
+        return await this.termosRepository.save(termo)
+    }
+
+    public async historicoTermosCompleto():Promise<TermosUso[]>{
+        return await this.termosRepository.find()
+    }
+
+    public async historicoPeriodo(dataInicio:Date, dataFinal:Date):Promise<TermosUso[]>{
+        return await this.termosRepository.find({
+            where:{
+                data_criacao:Between(dataInicio, dataFinal)
+            }
+        })
+    }
+
+    public async historicoTermosAtivosNoDia(dataPesquisada:Date){
+        return await this.termosRepository.find({
+            where: [
+                {
+                    data_criacao: LessThan(dataPesquisada),
+                    data_desativacao: MoreThan(dataPesquisada),
+                },
+                {
+                    data_criacao: LessThan(dataPesquisada),
+                    data_desativacao: IsNull()
+                }
+            ]
+        })
     }
 
 }

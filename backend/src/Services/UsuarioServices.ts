@@ -5,6 +5,7 @@ import bcrypt from "bcrypt"
 import TokenServices from "./TokenServices";
 import PayloadToken from "../Types/PayloadToken";
 import { TermosUso } from "../entities/TemosUso";
+import { UsuarioTermosUso } from "../entities/UsuarioTermosUso";
 
 class UsuarioServices {
     private usuarioRepository: Repository<Usuario>;
@@ -13,6 +14,7 @@ class UsuarioServices {
     constructor() {
         // Inicializa o repositório do TypeORM para a entidade Usuario
         this.usuarioRepository = AppDataSource.getRepository(Usuario);
+        this.termosRepository = AppDataSource.getRepository(TermosUso)
     }
 
     // Criar um novo usuário
@@ -23,15 +25,28 @@ class UsuarioServices {
 
     // Listar todos os usuários
     public async listarUsuarios(): Promise<Usuario[]> {
-        return await this.usuarioRepository.find({ where: { ativo: true }, relations: ["termos_uso"] }); // Inclui o relacionamento
+        const usuario = await this.usuarioRepository.find({ 
+            where: { ativo: true },
+            select:["id_usuario", "nome_completo", "cep", "data_nascimento", "email", "cpf"]
+        });
+        return usuario;
     }
 
     // Buscar um usuário pelo ID
     public async buscarUsuarioPorId(id: number): Promise<Usuario | null> {
-        return await this.usuarioRepository.findOne({
-            where: { id_usuario: id },
-            relations: ["termos_uso"],
-        });
+        try{ 
+            return await this.usuarioRepository.findOne({
+                where: { id_usuario: id },
+                relations: [
+                    "usuarioTermosUso",
+                    "usuarioTermosUso.termosUso"
+                ],
+                select:["id_usuario", "nome_completo", "cep", "data_nascimento", "email", "cpf"]
+            })
+        } catch(error){
+            console.log(error)
+            throw error
+        }
     }
 
     public async login(senha: string, email: string) {
@@ -43,9 +58,12 @@ class UsuarioServices {
         if (!senhaValida) {
             return false;
         }
+        console.log(usuario)
         const payload: PayloadToken = { id_usuario: usuario.id_usuario, tipo_usuario: usuario.tipo, ativo: usuario.ativo }
         const token = TokenServices.gerarToken(payload)
-        return {token:token, usuarioAtivo:usuario.ativo}
+        const termosAindaNaoApresentados = await this.conferirTermos(usuario)
+
+        return {token:token, usuarioAtivo:usuario.ativo, termosAindaNaoApresentados}
     }
 
     public async atualizarUsuario(id: number, data: Partial<Usuario>): Promise<Usuario | null> {
@@ -78,15 +96,13 @@ class UsuarioServices {
         return true;
     }
 
-    public async conferirTermos(id:number): Promise<TermosUso[]>{
-        const usuario = await this.buscarUsuarioPorId(id)
-        const termosAtivos = await this.termosRepository.find({where:{ativo:true}})
-        var termosNaoAceitosAinda:TermosUso[] = []
-        termosAtivos.forEach(termo=>{
-            if(!usuario?.termos_uso.includes(termo))
-                termosNaoAceitosAinda.push(termo)
-        })
-        return termosNaoAceitosAinda
+    public async conferirTermos(usuario:Usuario): Promise<TermosUso[]>{
+        const termosAindaNaoApresentados = await this.termosRepository
+            .createQueryBuilder("termosUso")
+            .innerJoin("termosUso.usuarioTermosUso", "relacaoUsuario") 
+            .where("termosUso.ativo = true AND NOT relacaoUsuario.usuario = :idUsuario", { idUsuario: usuario?.id_usuario }) 
+            .getMany();
+            return termosAindaNaoApresentados
     }
 }
 

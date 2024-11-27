@@ -1,5 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToMany } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, OneToMany } from "typeorm";
 import { Usuario } from "./Usuario";
+import { UsuarioTermosUso } from "./UsuarioTermosUso";
 
 @Entity()
 export class TermosUso {
@@ -15,12 +16,12 @@ export class TermosUso {
   @Column({ default: true })
   ativo: boolean; // Indica se o termo está ativo
 
-  @Column({default: new Date})
-  data_cracao: Date;
+  @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
+  data_criacao: Date;
 
   @Column()
   data_desativacao!: Date;
 
-  @ManyToMany(() => Usuario, (usuario) => usuario.termos_uso)
-  usuarios!: Usuario[];
+  @OneToMany(() => UsuarioTermosUso, (usuarioTermosUso) => usuarioTermosUso.termosUso)
+  usuarioTermosUso: UsuarioTermosUso[];
 }

@@ -4,6 +4,8 @@ import bcrypt from "bcrypt"
 import { Usuario } from "../entities/Usuario";
 import AtualizacaoUsuarioDTO from "../DTOs/AtualizacaoUsuarioDTO";
 import { TipoUsuario } from "../Types/TipoUsuario";
+import TermosLidosDTO from "../DTOs/TermosLidosDTO";
+import UsuarioTermosUsoSevices from "../Services/UsuarioTermosUsoSevices";
 
 class UserController{
 
@@ -11,13 +13,26 @@ class UserController{
         const {senha, email} = req.body
         try{
             const result = await UsuarioServices.login(senha, email)
+            console.log(result)
             if(result){
                 res.send(result)
                 return;
             }
             res.status(400).send("Usuário não encontrado")
         } catch(error){
-            res.status(500).send()
+            res.status(500).send({menssage:"Servidor não conseguiu completar o processo", erro:error})
+        }
+        return;
+    }
+
+    async adicionarTermosLidos(req:Request, res:Response){
+        const termosLidos:TermosLidosDTO[] = req.body as TermosLidosDTO[]
+        const idUsuario = res.locals.user.id_usuario
+        try{
+            await UsuarioTermosUsoSevices.adicionarTermosLidos(termosLidos, idUsuario)
+            res.status(200)
+        } catch(error){
+            res.status(500).send(error)
         }
         return;
     }
@@ -34,7 +49,6 @@ class UserController{
 
     async listaUsuarioUnico(req:Request, res:Response){
         try{
-            
             const id = parseInt(req.params.id)
             if(res.locals.user.tipo_usuario == TipoUsuario.adm || res.locals.user.id_usuario == id){
                 const usuario = await UsuarioServices.buscarUsuarioPorId(id)
@@ -42,7 +56,6 @@ class UserController{
             } else{
                 res.status(403).send("Ação não permitida")
             }
-                
             
         } catch(error){
             res.status(400).send({mensagem: "Busca não foi realizada", erro:error})
@@ -112,6 +125,18 @@ class UserController{
             res.status(200)
         } catch(error){
             res.status(500).send({mensagem: "Servidor não conseguiu completar o processo", erro:error})
+        }
+        return;
+    }
+
+    async adicionaTermosLidos(req:Request, res:Response){
+        var termosLidosParciais:TermosLidosDTO[] = req.body.termosLidos
+        const id = res.locals.id_usuario
+        try{
+            await UsuarioTermosUsoSevices.adicionarTermosLidos(termosLidosParciais, id)
+            res.status(200)
+        } catch(error){
+            res.status(500).send(error)
         }
         return;
     }

@@ -1,6 +1,7 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, JoinTable } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, JoinTable, OneToMany } from "typeorm";
 import { TermosUso } from "./TemosUso";
 import { TipoUsuario } from "../Types/TipoUsuario";
+import { UsuarioTermosUso } from "./UsuarioTermosUso";
 
 @Entity()
 export class Usuario {
@@ -32,9 +33,8 @@ export class Usuario {
   @Column({default: TipoUsuario.comum})
   tipo: TipoUsuario
 
-  @ManyToMany(() => TermosUso, (termos_uso) => termos_uso.usuarios)
-  @JoinTable() // Cria a tabela intermediária para o relacionamento muitos para muitos
-  termos_uso: TermosUso[];
+  @OneToMany(() => UsuarioTermosUso, (usuarioTermosUso) => usuarioTermosUso.usuario)
+  usuarioTermosUso: UsuarioTermosUso[];
 
 
 }

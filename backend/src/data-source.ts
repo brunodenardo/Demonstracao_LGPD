@@ -16,7 +16,7 @@ export const AppDataSource = new DataSource({
   database: "apidb",
   synchronize: true, // Não use "true" em produção, pode apagar dados
   logging: false,
-  entities: [__dirname + "/entities/*.ts"], // Caminho das entidades
-  migrations: [__dirname + "/migrations/*.ts"],
+  entities: [__dirname + "/entities/*"], // Caminho das entidades
+  migrations: [__dirname + "/migrations/*"],
   subscribers: [],
 });

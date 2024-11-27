@@ -15,7 +15,6 @@ class TokenServices {
 
     public autenticarJWT(req: Request, res: Response, next: NextFunction): void {
         const token = req.headers.authorization?.split(" ")[1]; // Token no cabeçalho `Authorization: Bearer <token>`
-        console.log(token)
         if (!token) {
             res.status(401).json({ message: "Token não fornecido!" });
             return; // Adicione `return` para garantir que o método retorne void
@@ -32,7 +31,8 @@ class TokenServices {
     }
 
     public autenticarPapelAdm(req: Request, res:Response, next: NextFunction): void{
-        if(res.locals.user.tipo == TipoUsuario.adm){
+        console.log(res.locals.user)
+        if(res.locals.user.tipo_usuario == TipoUsuario.adm){
             next();
         } else{
             res.status(403).json({message:"Ação não permitida"})
