@@ -104,6 +104,19 @@ class UsuarioServices {
             .getMany();
             return termosAindaNaoApresentados
     }
+
+    public async listarEmails(): Promise<string[]> {
+        try {
+            const usuarios = await this.listarUsuarios();
+            const emails = usuarios.map(usuario => usuario.email);
+    
+            return emails;
+            
+        } catch (error) {
+            console.error(error);
+            throw error;
+        }
+    }
 }
 
 export default new UsuarioServices();
