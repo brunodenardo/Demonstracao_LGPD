@@ -4,7 +4,7 @@ import { Usuario } from "../entities/Usuario";
 import bcrypt from "bcrypt"
 import TokenServices from "./TokenServices";
 import PayloadToken from "../Types/PayloadToken";
-import { TermosUso } from "../entities/TemosUso";
+import { TermosUso } from "../entities/TermosUso";
 import { UsuarioTermosUso } from "../entities/UsuarioTermosUso";
 
 class UsuarioServices {

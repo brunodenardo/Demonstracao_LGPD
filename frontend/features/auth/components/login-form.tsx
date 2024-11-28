@@ -5,6 +5,7 @@ import { Input } from "@/components/input";
 import { useState } from "react";
 import { login } from "../api/auth";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function LoginForm() {
     const router = useRouter();
@@ -63,6 +64,7 @@ export default function LoginForm() {
                     onChange={handleChange}
                 />
                 <Button title="Entrar" type="submit" />
+                <Link href="/register" className="text-sm underline">Cadastro</Link>
             </form>
         </div>
     )

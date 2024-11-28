@@ -1,4 +1,4 @@
-export default interface TemosLisdosDTO{
+export default interface TermosLisdosDTO{
     idTermo:number,
     aceito:boolean,
 }

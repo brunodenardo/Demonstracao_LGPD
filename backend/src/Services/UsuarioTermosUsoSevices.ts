@@ -1,5 +1,5 @@
 import { DataSource, Repository } from "typeorm";
-import { TermosUso } from "../entities/TemosUso";
+import { TermosUso } from "../entities/TermosUso";
 import { UsuarioTermosUso } from "../entities/UsuarioTermosUso";
 import TermosServices from "./TermosServices";
 import UsuarioServices from "./UsuarioServices";
