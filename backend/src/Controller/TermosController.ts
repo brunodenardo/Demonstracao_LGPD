@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { TermosUso } from "../entities/TemosUso";
+import { TermosUso } from "../entities/TermosUso";
 import TermosServices from "../Services/TermosServices";
 
 class TermosController{

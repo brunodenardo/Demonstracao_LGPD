@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, ManyToOne } from "typeorm";
 import { Usuario } from "./Usuario";
-import { TermosUso } from "./TemosUso";
+import { TermosUso } from "./TermosUso";
 
 @Entity()
 export class UsuarioTermosUso {

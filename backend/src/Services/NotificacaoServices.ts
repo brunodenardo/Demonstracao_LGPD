@@ -23,7 +23,7 @@ class NotificacaoServices {
                 to: listaEmails,
                 from: "vdlaranjeiro@gmail.com",
                 subject: "[IMPORTANTE] - Vazamento de dados",
-                text: 
+                html: 
                 `
                     <p>Informamos que recentemente identificamos um vazamento de dados em nosso sistema.</p>
                     <p>Recomendamos que você altere suas senhas e fique atento a qualquer atividade suspeita em suas contas.</p>

@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, JoinTable, OneToMany } from "typeorm";
-import { TermosUso } from "./TemosUso";
+import { TermosUso } from "./TermosUso";
 import { TipoUsuario } from "../Types/TipoUsuario";
 import { UsuarioTermosUso } from "./UsuarioTermosUso";
 
