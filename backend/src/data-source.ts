@@ -12,8 +12,8 @@ export const AppDataSource = new DataSource({
   host: "localhost",
   port: 5432,
   username: "postgres",
-  password: "PostGris",
-  database: "lgpd",
+  password: "postgres",
+  database: "apidb",
   synchronize: true, // Não use "true" em produção, pode apagar dados
   logging: false,
   entities: [__dirname + "/entities/*"], // Caminho das entidades

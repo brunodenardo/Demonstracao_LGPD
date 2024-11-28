@@ -1,5 +1,8 @@
 import sgMail, { MailService } from "@sendgrid/mail";
 import UsuarioServices from "./UsuarioServices";
+import dotenv from "dotenv";
+
+dotenv.config()
 
 class NotificacaoServices {
     private mailService: MailService;
