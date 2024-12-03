@@ -5,6 +5,9 @@ import bcrypt from "bcrypt"
 import TokenServices from "./TokenServices";
 import PayloadToken from "../Types/PayloadToken";
 import { TermosUso } from "../entities/TermosUso";
+import * as fs from 'fs';
+import * as appRoot from 'app-root-path';
+import * as path from 'path';
 import { UsuarioTermosUso } from "../entities/UsuarioTermosUso";
 
 class UsuarioServices {
@@ -86,12 +89,28 @@ class UsuarioServices {
         return true;
     }
 
+    private readonly blacklistPath = path.join(appRoot.path, 'backups/blacklist.json');
+
     public async esquecerUsuario(id: number): Promise<boolean> {
         const usuario = await this.buscarUsuarioPorId(id);
         if (!usuario) {
             return false;
         }
 
+        const data = fs.existsSync(this.blacklistPath) 
+                ? JSON.parse(fs.readFileSync(this.blacklistPath, 'utf-8')) 
+                : { blacklist: [] };
+        
+        // Verificar se o ID já está na blacklist
+        if (!data.blacklist.includes(id)) {
+            data.blacklist.push(id);
+
+            // Salvar o arquivo JSON atualizado
+            fs.writeFileSync(this.blacklistPath, JSON.stringify(data, null, 2), 'utf-8');
+            console.log(`ID ${id} adicionado à blacklist.`);
+        } else {
+            console.log(`ID ${id} já está na blacklist.`);
+        }
         await this.usuarioRepository.remove(usuario);
         return true;
     }
