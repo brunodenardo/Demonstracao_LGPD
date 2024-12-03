@@ -6,7 +6,6 @@ import bodyParser from 'body-parser';
 import { AppDataSource } from "./data-source";
 
 import UserRouter from './Routes/UserRoutes';
-import NotificacaoRouter from './Routes/NotificacaoRoutes';
 
 import seedUsuarios from "./Services/seedUsuario";
 
@@ -35,7 +34,6 @@ app.use(cors({
 }))
 
 app.use("/user", UserRouter)
-app.use("/notificacao", NotificacaoRouter)
 const PORT = process.env.PORT || 8000;
 
 app.listen(PORT, () => {
