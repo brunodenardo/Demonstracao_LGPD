@@ -28,7 +28,7 @@ export default function LoginForm() {
         await login(usuario)
             .then((usuario_ativo) => {
                 if (!usuario_ativo) {
-                    router.push("/user/conta-desativada");
+                    router.push("/deactivated-account");
                     return;
                 }
 

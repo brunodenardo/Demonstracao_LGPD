@@ -1,10 +1,10 @@
 'use client';
 
 import { useState } from "react";
-import Link from "next/link";
 import Modal from "@/components/modal";
 import { useRouter } from "next/navigation";
 import { deactivateUser, deleteUser } from "@/features/user/api/user";
+import UserEditForm from "@/features/user/components/user-edit-form";
 
 export default function Home() {
     const router = useRouter();
@@ -37,14 +37,9 @@ export default function Home() {
 
     return (
         <>
-            <div className="w-1/2 bg-white p-10 rounded flex flex-col gap-5">
+            <UserEditForm />
+            <div className="w-1/2 bg-white px-10 pb-10 pt-0 rounded flex flex-col gap-5">
                 <div className=" flex justify-between items-center">
-                    <Link
-                        href={`/user/editar`}
-                        className="text-zinc-600 hover:text-zinc-900 transition-colors"
-                    >
-                        • Atualizar dados
-                    </Link>
                     <button
                         className="px-4 py-2 text-red-600 text-sm font-semibold rounded w-fit border border-red-600 hover:bg-red-50 transition-colors"
                         onClick={() => setModal(true)}

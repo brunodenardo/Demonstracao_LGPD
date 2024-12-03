@@ -20,7 +20,14 @@ export default function UserEditForm() {
         async function fetchUser() {
             const user = await getUser();
             user.data_nascimento = new Date(user.data_nascimento).toISOString().split('T')[0];
-            setUsuario(user);
+            setUsuario({
+                nome_completo: user.nome_completo || "",
+                data_nascimento: user.data_nascimento || "",
+                cpf: user.cpf || "",
+                cep: user.cep || "",
+                email: user.email || "",
+                senha: user.senha || ""
+            });
         }
 
         fetchUser();
@@ -43,10 +50,8 @@ export default function UserEditForm() {
     }
 
     return (
-        <div className="bg-white p-10 rounded">
-            <Link href="/home" className="text-2xl font-bold">←</Link>
-            <p className="text-lg font-semibold mb-5">Atualização de dados</p>
-            <form className="flex flex-col items-center" onSubmit={handleSubmit}>
+        <div className="w-1/2 bg-white p-10 rounded">
+            <form className="w-full flex flex-col items-center" onSubmit={handleSubmit}>
                 <Input 
                     label="Nome Completo" 
                     type="text" 
