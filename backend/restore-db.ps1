@@ -45,7 +45,7 @@ if (-not (Test-Path "$CurrentDir/backups/$BackupFile")) {
     exit 1
 }
 
-# Executar o comando Docker para restaurar o banco
+# Restaurar o banco de dados
 Write-Host "Restaurando o banco de dados $DB_NAME com o arquivo $BackupFile..."
 $command = @"
 docker run --rm --network=demonstracao_lgpd_default -v "$CurrentDir/backups:/backups" -e PGPASSWORD="$DB_PASSWORD" postgres:latest pg_restore --clean --if-exists -h "$DB_HOST" -U "$DB_USER" -d "$DB_NAME" "/backups/$BackupFile"
@@ -59,4 +59,37 @@ if ($LASTEXITCODE -eq 0) {
 } else {
     Write-Host "Erro ao restaurar o banco de dados."
     exit 1
+}
+
+# Lógica da Blacklist (aplicada após a restauração)
+$BlacklistPath = "$CurrentDir/backups/blacklist.json"
+if (-not (Test-Path $BlacklistPath)) {
+    Write-Host "Arquivo blacklist.json não encontrado. Continuando sem aplicar a blacklist."
+} else {
+    # Ler os IDs da blacklist
+    $Blacklist = Get-Content $BlacklistPath | ConvertFrom-Json
+    $BlacklistIDs = $Blacklist.blacklist -join ", "
+
+    # Validar se há IDs na blacklist
+    if (-not $BlacklistIDs) {
+        Write-Host "Nenhum ID encontrado na blacklist. Finalizando restauração."
+    } else {
+        Write-Host "Aplicando blacklist para os seguintes IDs: $BlacklistIDs"
+
+        # Criar um comando SQL para remover os registros da blacklist
+        $FilterSQL = @"
+DELETE FROM usuario WHERE id_usuario IN ($BlacklistIDs);
+"@
+
+        # Executar o comando SQL para aplicar a blacklist
+        Write-Host "Excluindo registros com IDs na blacklist..."
+        docker run --rm --network=demonstracao_lgpd_default -e PGPASSWORD="$DB_PASSWORD" postgres:latest psql -h "$DB_HOST" -U "$DB_USER" -d "$DB_NAME" -c "$FilterSQL"
+
+        if ($LASTEXITCODE -ne 0) {
+            Write-Host "Erro ao aplicar a blacklist. Verifique os logs para mais detalhes."
+            exit 1
+        } else {
+            Write-Host "Blacklist aplicada com sucesso!"
+        }
+    }
 }

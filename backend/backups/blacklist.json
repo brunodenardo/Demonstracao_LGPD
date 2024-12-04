@@ -1,3 +1,7 @@
 {
-    "balcklist":[]
+  "blacklist": [
+    3,
+    4,
+    5
+  ]
 }

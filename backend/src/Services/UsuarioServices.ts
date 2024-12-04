@@ -92,6 +92,7 @@ class UsuarioServices {
     private readonly blacklistPath = path.join(appRoot.path, 'backups/blacklist.json');
 
     public async esquecerUsuario(id: number): Promise<boolean> {
+        console.log(this.blacklistPath)
         const usuario = await this.buscarUsuarioPorId(id);
         if (!usuario) {
             return false;

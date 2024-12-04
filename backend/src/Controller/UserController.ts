@@ -63,7 +63,8 @@ class UserController{
     }
 
     async cadastrarUsuario(req:Request, res:Response){
-        var usuario:Partial<Usuario> = req.body
+        //console.log(req.body)
+        var usuario:Partial<Usuario> = req.body as Usuario
         if(usuario.senha == null){
             res.status(400).send("Requisição não possui os dados necessários")
             return;
@@ -101,6 +102,7 @@ class UserController{
             await UsuarioServices.esquecerUsuario(id)
             res.status(200).send({})
         } catch(error){
+            console.log(error as Error)
             res.status(500).send({mensagem: "Servidor não conseguiu completar o processo", erro:error})
         }
         return;
@@ -113,6 +115,7 @@ class UserController{
             await UsuarioServices.atualizarUsuario(id, usuario)
             res.status(200).send({})
         } catch(error){
+            console.log(error)
             res.status(500).send({mensagem: "Servidor não conseguiu completar o processo", erro:error})
         }
         return;
