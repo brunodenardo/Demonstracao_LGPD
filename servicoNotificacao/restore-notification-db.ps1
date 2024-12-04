@@ -45,6 +45,19 @@ if (-not (Test-Path "$CurrentDir/backups/$BackupFile")) {
     exit 1
 }
 
+# Truncar a tabela 'usuario' antes da restauração
+$TruncateSQL = @"
+TRUNCATE TABLE usuario RESTART IDENTITY CASCADE;
+"@
+
+Write-Host "Limpando a tabela 'usuario' antes de restaurar os dados..."
+docker run --rm --network=demonstracao_lgpd_default -e PGPASSWORD="$DB_PASSWORD" postgres:latest psql -h "$DB_HOST" -U "$DB_USER" -d "$DB_NAME" -c "$TruncateSQL"
+
+if ($LASTEXITCODE -ne 0) {
+    Write-Host "Erro ao truncar a tabela 'usuario'. Verifique os logs para mais detalhes."
+    exit 1
+}
+
 # Restaurar os dados para a tabela usuario
 Write-Host "Restaurando os dados da tabela 'usuario' com o arquivo $BackupFile..."
 $command = @"

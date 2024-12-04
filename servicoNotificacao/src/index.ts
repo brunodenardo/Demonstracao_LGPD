@@ -11,13 +11,13 @@ const mailService = sgMail;
 
 
 
-/* const apiKey = process.env.SENDGRID_API_KEY;
+const apiKey = process.env.SENDGRID_API_KEY;
 if (!apiKey) {
     throw new Error("API Key do SendGrid não fornecida");
 }
 
 mailService.setApiKey(apiKey);
- */
+
 
 
 AppDataSource.initialize()
@@ -45,7 +45,7 @@ async function enviaEmail() {
                 <p>Recomendamos que você altere suas senhas e fique atento a qualquer atividade suspeita em suas contas.</p>
             `
         }
-        mailService.sendMultiple(msg);
+        await mailService.sendMultiple(msg);
     } catch (error) {
         console.error("Erro ao enviar email", error);
     }
