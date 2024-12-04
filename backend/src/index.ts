@@ -1,9 +1,12 @@
 import express from 'express'
 import cors from 'cors';
-import UserRouter from './Routes/UserRoutes';
 import * as dotenv from "dotenv";
 import bodyParser from 'body-parser';
+
 import { AppDataSource } from "./data-source";
+
+import UserRouter from './Routes/UserRoutes';
+
 import seedUsuarios from "./Services/seedUsuario";
 
 dotenv.config();
@@ -29,7 +32,6 @@ app.use(cors({
     allowedHeaders: 'Content-Type, Authorization',
     credentials: true
 }))
-
 
 app.use("/user", UserRouter)
 const PORT = process.env.PORT || 8000;

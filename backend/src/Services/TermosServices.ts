@@ -1,6 +1,6 @@
 import { Between, IsNull, LessThan, MoreThan, Repository } from "typeorm";
 import { AppDataSource } from "../data-source";
-import { TermosUso } from "../entities/TemosUso";
+import { TermosUso } from "../entities/TermosUso";
 
 class TermosServices{
     private termosRepository:Repository<TermosUso>;
