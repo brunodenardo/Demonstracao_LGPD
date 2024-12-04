@@ -26,7 +26,7 @@ class UserController{
     }
 
     async adicionarTermosLidos(req:Request, res:Response){
-        const termosLidos:TermosLidosDTO[] = req.body as TermosLidosDTO[]
+        const termosLidos:TermosLidosDTO[] = req.body.termosLidos as TermosLidosDTO[]
         const idUsuario = res.locals.user.id_usuario
         try{
             await UsuarioTermosUsoSevices.adicionarTermosLidos(termosLidos, idUsuario)
