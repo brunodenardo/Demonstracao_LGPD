@@ -77,6 +77,10 @@ class UsuarioServices {
             return null;
         }
 
+        if (data.senha === '') {
+            delete data.senha;
+        }
+
         Object.assign(usuario, data);
         return await this.usuarioRepository.save(usuario);
     }
