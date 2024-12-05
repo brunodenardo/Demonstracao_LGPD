@@ -25,5 +25,11 @@ export const endpoints = {
         deactivate: "/user/desativa",
         reactivate: "/user/ativa",
         delete: "/user/esquece",
+        checkTerm: "/user/conferirTermo",
+        acceptTerm: "/user/aceitarTermo",
+        termChoices: "/user/escolhasTermo"
+    },
+    termos: {
+        get: "/termos/termoAtual"
     }
 }

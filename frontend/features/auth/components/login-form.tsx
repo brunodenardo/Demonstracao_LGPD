@@ -32,7 +32,7 @@ export default function LoginForm() {
                     return;
                 }
 
-                router.push("/home")
+                router.push("/termos-uso");
             })
             .catch((e) => {
                 if (e.response.status === 400) {

@@ -31,7 +31,7 @@ class TokenServices {
     }
 
     public autenticarPapelAdm(req: Request, res:Response, next: NextFunction): void{
-        console.log(res.locals.user)
+        // console.log(res.locals.user)
         if(res.locals.user.tipo_usuario == TipoUsuario.adm){
             next();
         } else{

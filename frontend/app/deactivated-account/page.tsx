@@ -9,7 +9,7 @@ export default function ContaDesativadaPage() {
     async function handleReactivate() {
         await reactivateUser()
             .then(() => {
-                router.push("/home");
+                router.push("/termos-uso");
                 window.alert("Sua conta foi reativada com sucesso");
             })
             .catch(() => window.alert("Erro ao reativar a sua conta"));

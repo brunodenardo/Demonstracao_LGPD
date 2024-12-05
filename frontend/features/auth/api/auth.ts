@@ -1,8 +1,11 @@
 import { api, endpoints } from "@/lib/api-client";
 
-export async function register(data: User): Promise<void> {
+export async function register(data: User, termo: TermoDeUso): Promise<void> {
     console.log(data)
-    return await api.post(endpoints.auth.register, data);
+    return await api.post(endpoints.auth.register, {
+        usuario: data,
+        termo
+    });
 }
 
 export async function login(data: UserLogin): Promise<{ usuarioAtivo: boolean }> {
@@ -13,4 +16,9 @@ export async function login(data: UserLogin): Promise<{ usuarioAtivo: boolean }>
     localStorage.setItem("token", token);
     
     return usuarioAtivo;
+}
+
+export async function getTermosDeUso(): Promise<TermoDeUso> {
+    const res = await api.get<TermoDeUso>(endpoints.termos.get);
+    return res.data;
 }

@@ -15,3 +15,15 @@ interface UserLogin {
 interface LoginResponse {
     token: string;
 }
+
+interface TermoDeUso {
+    id: number;
+    itens: ItemTermo[];
+}
+
+interface ItemTermo {
+    id: number;
+    descricao: string;
+    obrigatorio: boolean;
+    aceito?: boolean;
+}

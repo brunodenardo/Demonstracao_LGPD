@@ -1,14 +1,18 @@
 import { api, endpoints } from "@/lib/api-client";
 
-export async function getUser(): Promise<User> {
-    const res = await api.get<User>(endpoints.user.listOne);
+export async function getUser(): Promise<{ user: User, termo: TermoDeUso }> {
+    const res = await api.get(endpoints.user.listOne);
 
+    console.log(res.data)
     return res.data;
 }
 
-export async function updateUser(user: User): Promise<void> {
+export async function updateUser(usuario: User, termo: TermoDeUso): Promise<void> {
     try {
-        const res = await api.put(endpoints.user.update, user);
+        const res = await api.put(endpoints.user.update, {
+            usuario,
+            termo
+        });
         return;
         
     } catch (error) {

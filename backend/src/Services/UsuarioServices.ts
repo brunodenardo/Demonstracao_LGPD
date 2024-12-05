@@ -3,21 +3,27 @@ import { AppDataSource } from "../data-source";
 import { Usuario } from "../entities/Usuario";
 import bcrypt from "bcrypt"
 import TokenServices from "./TokenServices";
+import TermosServices from "./TermosServices";
 import PayloadToken from "../Types/PayloadToken";
-import { TermosUso } from "../entities/TermosUso";
 import * as fs from 'fs';
 import * as appRoot from 'app-root-path';
 import * as path from 'path';
-import { UsuarioTermosUso } from "../entities/UsuarioTermosUso";
+import { AceiteItem } from "../entities/AceiteItem";
+import { TermoDeUso } from "../entities/TermoDeUso";
+import { AceiteTermoDTO } from "../DTOs/AceiteTermoDTO";
+import { Item } from "../entities/Item";
+import ItensServices from "./ItensServices";
+import AceiteItemServices from "./AceiteItemServices";
 
 class UsuarioServices {
     private usuarioRepository: Repository<Usuario>;
-    private termosRepository:Repository<TermosUso>;
+    private termosRepository: Repository<TermoDeUso>;
+    private interacaoRepository: Repository<AceiteItem>;
 
     constructor() {
-        // Inicializa o repositório do TypeORM para a entidade Usuario
         this.usuarioRepository = AppDataSource.getRepository(Usuario);
-        this.termosRepository = AppDataSource.getRepository(TermosUso)
+        this.termosRepository = AppDataSource.getRepository(TermoDeUso);
+        this.interacaoRepository = AppDataSource.getRepository(AceiteItem);
     }
 
     // Criar um novo usuário
@@ -28,25 +34,22 @@ class UsuarioServices {
 
     // Listar todos os usuários
     public async listarUsuarios(): Promise<Usuario[]> {
-        const usuario = await this.usuarioRepository.find({ 
+        const usuario = await this.usuarioRepository.find({
             where: { ativo: true },
-            select:["id_usuario", "nome_completo", "cep", "data_nascimento", "email", "cpf"]
+            select: ["id_usuario", "nome_completo", "cep", "data_nascimento", "email", "cpf"]
         });
         return usuario;
     }
 
     // Buscar um usuário pelo ID
     public async buscarUsuarioPorId(id: number): Promise<Usuario | null> {
-        try{ 
+        try {
             return await this.usuarioRepository.findOne({
                 where: { id_usuario: id },
-                relations: [
-                    "usuarioTermosUso",
-                    "usuarioTermosUso.termosUso"
-                ],
-                select:["id_usuario", "nome_completo", "cep", "data_nascimento", "email", "cpf"]
+                relations: ["aceites"],
+                select: ["id_usuario", "nome_completo", "cep", "data_nascimento", "email", "cpf"]
             })
-        } catch(error){
+        } catch (error) {
             console.log(error)
             throw error
         }
@@ -61,12 +64,11 @@ class UsuarioServices {
         if (!senhaValida) {
             return false;
         }
-        console.log(usuario)
+        // console.log(usuario)
         const payload: PayloadToken = { id_usuario: usuario.id_usuario, tipo_usuario: usuario.tipo, ativo: usuario.ativo }
         const token = TokenServices.gerarToken(payload)
-        const termosAindaNaoApresentados = await this.conferirTermos(usuario)
-
-        return {token:token, usuarioAtivo:usuario.ativo, termosAindaNaoApresentados}
+        TermosServices.listarTermoAtual()
+        return { token: token, usuarioAtivo: usuario.ativo }
     }
 
     public async atualizarUsuario(id: number, data: Partial<Usuario>): Promise<Usuario | null> {
@@ -97,10 +99,10 @@ class UsuarioServices {
             return false;
         }
 
-        const data = fs.existsSync(this.blacklistPath) 
-                ? JSON.parse(fs.readFileSync(this.blacklistPath, 'utf-8')) 
-                : { blacklist: [] };
-        
+        const data = fs.existsSync(this.blacklistPath)
+            ? JSON.parse(fs.readFileSync(this.blacklistPath, 'utf-8'))
+            : { blacklist: [] };
+
         // Verificar se o ID já está na blacklist
         if (!data.blacklist.includes(id)) {
             data.blacklist.push(id);
@@ -115,27 +117,83 @@ class UsuarioServices {
         return true;
     }
 
-    public async conferirTermos(usuario:Usuario): Promise<TermosUso[]>{
-        const termosAindaNaoApresentados = await this.termosRepository
-            .createQueryBuilder("termosUso")
-            .innerJoin("termosUso.usuarioTermosUso", "relacaoUsuario") 
-            .where("termosUso.ativo = true AND NOT relacaoUsuario.usuario = :idUsuario", { idUsuario: usuario?.id_usuario }) 
-            .getMany();
-            return termosAindaNaoApresentados
+    public async conferirTermos(id_usuario: number): Promise<boolean> {
+        const termoAtual = await TermosServices.listarTermoAtual();
+
+        const termoEntregue = await this.interacaoRepository.findOne({
+            where: {
+                usuario: { id_usuario: id_usuario },
+                termo: { id: termoAtual.id }
+            }
+        });
+        console.log(!!termoEntregue)
+
+        return !!termoEntregue;
     }
 
-    public async listarEmails(): Promise<string[]> {
-        try {
-            const usuarios = await this.listarUsuarios();
-            const emails = usuarios.map(usuario => usuario.email);
-    
-            return emails;
-            
-        } catch (error) {
-            console.error(error);
-            throw error;
+    public async registrarAceiteTermos(usuario: Usuario, termoAceito: AceiteTermoDTO) {
+
+        // Verificação do termo
+        const termo = await this.termosRepository.findOne({
+            where: { id: termoAceito.id },
+            relations: ["itens"],
+        });
+
+        if (!termo) {
+            throw new Error("Termo de uso não encontrado.");
         }
+
+        // Verificação dos itens do termo
+        const idsItensValidos = termo.itens.map(item => item.id);
+        const itensInvalidos = termoAceito.itens.filter(
+            item => !idsItensValidos.includes(item.id)
+        );
+
+        if (itensInvalidos.length > 0) {
+            throw new Error("Um ou mais itens não pertencem ao termo de uso fornecido.");
+        }
+
+        // Marcar as escolhas anteriores como inativas
+        for (const item of termoAceito.itens) {
+            await this.interacaoRepository.update(
+                { usuario: usuario, termo: termo, item: { id: item.id } as Item },
+                { ativo: false }
+            );
+        }
+
+        // Registrar aceite dos itens
+        const registrosAceite: Partial<AceiteItem>[] = termoAceito.itens.map((item) => ({
+            usuario: usuario,
+            termo: termo,
+            item: { id: item.id } as Item,
+            aceito: item.aceito,
+        }))
+        await this.interacaoRepository.save(registrosAceite);
+    }
+
+    public async listarEscolhasTermo(usuario: Usuario) {
+
+        const termoAtual = await TermosServices.listarTermoAtual();
+
+        // Recuperar os itens e os aceites
+        const itens = await ItensServices.listarItensPorTermo(termoAtual);
+        const aceites = await AceiteItemServices.listarAceitesAtivosPorUsuarioETermo(usuario, termoAtual);
+
+        // Combinar as informações dos itens com os aceites correspondentes
+        const itensComAceites = itens.map(item => {
+            const aceite = aceites.find(a => a.item.id === item.id);
+            return {
+                ...item,
+                aceito: aceite?.aceito
+            };
+        });
+
+        return ({
+            id: termoAtual.id,
+            itens: itensComAceites
+        })
     }
 }
+
 
 export default new UsuarioServices();

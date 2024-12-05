@@ -6,6 +6,7 @@ import bodyParser from 'body-parser';
 import { AppDataSource } from "./data-source";
 
 import UserRouter from './Routes/UserRoutes';
+import TermosRouter from './Routes/TermosRoutes';
 
 import seedUsuarios from "./Services/seedUsuario";
 
@@ -34,6 +35,7 @@ app.use(cors({
 }))
 
 app.use("/user", UserRouter)
+app.use("/termos", TermosRouter)
 const PORT = process.env.PORT || 8000;
 
 app.listen(PORT, () => {
