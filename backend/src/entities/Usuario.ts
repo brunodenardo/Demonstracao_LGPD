@@ -2,7 +2,7 @@ import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, JoinTable, OneToMan
 import { TipoUsuario } from "../Types/TipoUsuario";
 import { AceiteItem } from "./AceiteItem";
 
-@Entity("usuarios")
+@Entity()
 export class Usuario {
 
   @PrimaryGeneratedColumn()

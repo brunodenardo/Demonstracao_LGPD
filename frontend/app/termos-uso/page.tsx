@@ -15,7 +15,7 @@ export default function TermosDeUso() {
             try {
                 const res = await api.get(endpoints.user.checkTerm);
                 const termoEntregue = res.data;
-                
+
                 if (termoEntregue) {
                     router.push("/home");
                     return;
@@ -44,14 +44,18 @@ export default function TermosDeUso() {
         });
     };
 
-    async function handleAccept() {
-        try {
-            await api.post(endpoints.user.acceptTerm, termo);
-            router.push("/home");
-        } catch (error) {
-            console.error("Falha ao aceitar os novos termos", error);
-            window.alert("Falha ao aceitar os novos termos");
-        }
+    async function handleAccept(e: any) {
+        e.preventDefault();
+        await api.post(endpoints.user.acceptTerm, termo)
+            .then(() => {
+                router.push("/home");
+            })
+            .catch((error) => {
+                console.error("Falha ao aceitar os novos termos", error);
+                window.alert("Falha ao aceitar os novos termos");
+
+            })
+
     }
 
     if (loading) {
