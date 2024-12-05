@@ -45,8 +45,7 @@ class UserController {
                     return;
                 }
 
-                const termo = await UsuarioServices.listarEscolhasTermo(user)
-                res.status(200).send({ user, termo })
+                res.status(200).send(user)
             } else {
                 res.status(403).send("Ação não permitida")
             }
@@ -78,8 +77,7 @@ class UserController {
     }
 
     async atualizacaoUsuario(req: Request, res: Response) {
-        const usuarioDTO: AtualizacaoUsuarioDTO = req.body.usuario;
-        const termo: AceiteTermoDTO = req.body.termo;
+        const usuarioDTO: AtualizacaoUsuarioDTO = req.body;
 
         const id = res.locals.user.id_usuario;
         const usuario: Partial<Usuario> = usuarioDTO;
@@ -90,7 +88,6 @@ class UserController {
 
         try {
             await UsuarioServices.atualizarUsuario(id, usuario);
-            await UsuarioServices.registrarAceiteTermos(res.locals.user, termo);
             res.status(200).send({});
         } catch (error) {
             res.status(500).send({ mensagem: "Servidor não conseguiu completar o processo", erro: error });
@@ -149,6 +146,20 @@ class UserController {
 
         try {
             await UsuarioServices.registrarAceiteTermos(usuario, termo)
+            res.status(200).send({})
+
+        } catch (error: any) {
+            res.status(500).send({ mensagem: "Servidor não conseguiu completar o processo", erro: error.message })
+        }
+    }
+
+    async atualizarTermos(req: Request, res: Response) {
+        const termo: AceiteTermoDTO = req.body
+        const usuario = res.locals.user
+
+        try {
+            await UsuarioServices.registrarAceiteTermos(usuario, termo)
+            res.status(200).send({})
 
         } catch (error: any) {
             res.status(500).send({ mensagem: "Servidor não conseguiu completar o processo", erro: error.message })

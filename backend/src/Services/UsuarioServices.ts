@@ -67,7 +67,6 @@ class UsuarioServices {
         // console.log(usuario)
         const payload: PayloadToken = { id_usuario: usuario.id_usuario, tipo_usuario: usuario.tipo, ativo: usuario.ativo }
         const token = TokenServices.gerarToken(payload)
-        TermosServices.listarTermoAtual()
         return { token: token, usuarioAtivo: usuario.ativo }
     }
 

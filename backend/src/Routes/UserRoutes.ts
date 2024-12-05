@@ -15,6 +15,7 @@ UserRouter.put("/ativa", TokenServices.autenticarJWT, UserController.ativaUsuari
 UserRouter.delete("/esquece", TokenServices.autenticarJWT, UserController.esquecerUsuario)
 UserRouter.get("/conferirTermo", TokenServices.autenticarJWT, UserController.conferirTermos)
 UserRouter.post("/aceitarTermo", TokenServices.autenticarJWT, UserController.aceitarTermos)
+UserRouter.post("/atualizarTermo", TokenServices.autenticarJWT, UserController.atualizarTermos)
 UserRouter.get("/escolhasTermo", TokenServices.autenticarJWT, UserController.listarEscolhasTermo)
 
 export default UserRouter

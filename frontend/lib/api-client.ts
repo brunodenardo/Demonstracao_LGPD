@@ -1,3 +1,4 @@
+import { updateTermo } from "@/features/user/api/user";
 import Axios from "axios";
 
 export const api = Axios.create({
@@ -27,7 +28,8 @@ export const endpoints = {
         delete: "/user/esquece",
         checkTerm: "/user/conferirTermo",
         acceptTerm: "/user/aceitarTermo",
-        termChoices: "/user/escolhasTermo"
+        termChoices: "/user/escolhasTermo",
+        updateTerm: "/user/atualizarTermo"
     },
     termos: {
         get: "/termos/termoAtual"

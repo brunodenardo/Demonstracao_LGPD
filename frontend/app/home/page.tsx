@@ -5,6 +5,7 @@ import Modal from "@/components/modal";
 import { useRouter } from "next/navigation";
 import { deactivateUser, deleteUser } from "@/features/user/api/user";
 import UserEditForm from "@/features/user/components/user-edit-form";
+import UserTermEditForm from "@/features/user/components/user-termo-edit-form";
 
 export default function Home() {
     const router = useRouter();
@@ -36,10 +37,11 @@ export default function Home() {
     }
 
     return (
-        <>
+        <div className="w-1/2 flex flex-col gap-5 p-20">
             <UserEditForm />
-            <div className="w-1/2 bg-white px-10 pb-10 pt-0 rounded flex flex-col gap-5">
-                <div className=" flex justify-between items-center">
+            <UserTermEditForm />
+            <div className="w-full bg-white p-5 rounded flex justify-between">
+                <div className="flex justify-between items-center">
                     <button
                         className="px-4 py-2 text-red-600 text-sm font-semibold rounded w-fit border border-red-600 hover:bg-red-50 transition-colors"
                         onClick={() => setModal(true)}
@@ -80,6 +82,6 @@ export default function Home() {
                     </div>
                 </div>
             </Modal>
-        </>
+        </div>
     )
 }

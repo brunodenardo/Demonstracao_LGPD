@@ -14,11 +14,10 @@ export default function UserEditForm() {
         email: "",
         senha: ""
     });
-    const [termo, setTermo] = useState<TermoDeUso>({ id: 0, itens: [] });
 
     useEffect(() => {
         async function fetchUser() {
-            const { user, termo } = await getUser();
+            const user = await getUser();
             user.data_nascimento = new Date(user.data_nascimento).toISOString().split('T')[0];
             setUsuario({
                 nome_completo: user.nome_completo || "",
@@ -28,8 +27,6 @@ export default function UserEditForm() {
                 email: user.email || "",
                 senha: user.senha || ""
             });
-
-            setTermo(termo);
         }
 
         fetchUser();
@@ -43,25 +40,16 @@ export default function UserEditForm() {
         }));
     }
 
-    function handleCheckItem(index: number) {
-        setTermo(prevTermo => {
-            const newTermo = { ...prevTermo };
-            newTermo.itens = [...prevTermo.itens];
-            newTermo.itens[index] = { ...newTermo.itens[index], aceito: !newTermo.itens[index].aceito };
-            return newTermo;
-        });
-    };
-
     async function handleSubmit(e: any) {
         e.preventDefault();
 
-        await updateUser(usuario, termo)
-            .then(() => window.alert("Dados atualizado com sucesso"))
+        await updateUser(usuario)
+            .then(() => window.alert("Dados atualizados com sucesso"))
             .catch(() => window.alert("Erro ao atualizar os seus dados"));
     }
 
     return (
-        <div className="w-1/2 bg-white p-10 rounded">
+        <div className="w-full bg-white p-10 rounded">
             <form className="w-full flex flex-col items-center" onSubmit={handleSubmit}>
                 <Input
                     label="Nome Completo"
@@ -107,23 +95,6 @@ export default function UserEditForm() {
                     value={usuario.senha}
                     onChange={handleChange}
                 />
-                <hr className="w-full my-6" />
-                <div className="w-full flex flex-col gap-2">
-                    <h2 className="font-semibold">Termos de Uso</h2>
-                    {termo?.itens.map((item, index) => (
-                        <div key={index}>
-                            <label>
-                                <input
-                                    type="checkbox"
-                                    checked={item.aceito}
-                                    disabled={item.obrigatorio}
-                                    onChange={() => handleCheckItem(index)}
-                                />
-                                {`  ${item.descricao} ${item.obrigatorio ? '(Obrigatório)' : ''}`}
-                            </label>
-                        </div>
-                    ))}
-                </div>
                 <Button title="Atualizar" type="submit" />
             </form>
         </div>
