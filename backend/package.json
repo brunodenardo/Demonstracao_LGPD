@@ -9,8 +9,8 @@
     "migration:generate": "typeorm-ts-node-commonjs migration:generate -d ./src/data-source.ts",
     "migration:run": "typeorm-ts-node-commonjs migration:run -d ./src/data-source.ts",
     "migration:revert": "typeorm-ts-node-commonjs migration:revert -d ./src/data-source.ts",
-    "backup-db": "docker run --rm --network=host -v %cd%:/backups -e PGPASSWORD=postgres postgres:latest pg_dump -h host.docker.internal -U postgres -d apidb -F c > ./backup_local.dump",
-    "restore-db": "docker run --rm --network=host -v %cd%:/backups -e PGPASSWORD=postgres postgres:latest pg_restore -h host.docker.internal -U postgres -d apidb < ./backup_local.dump"
+    "backup-db": "powershell ./backup-db.ps1",
+    "restore-db": "powershell ./restore-db.ps1"
   },
   "include": [
     "src/**/*.ts"

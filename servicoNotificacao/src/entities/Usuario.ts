@@ -1,8 +1,10 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, JoinTable, OneToMany } from "typeorm";
 import { TipoUsuario } from "../Types/TipoUsuario";
-import { AceiteItem } from "./AceiteItem";
 
-@Entity("usuarios")
+
+
+
+@Entity()
 export class Usuario {
 
   @PrimaryGeneratedColumn()
@@ -32,6 +34,5 @@ export class Usuario {
   @Column({default: TipoUsuario.comum})
   tipo: TipoUsuario
 
-  @OneToMany(() => AceiteItem, (aceiteItem) => aceiteItem.usuario)
-  aceites: AceiteItem[];
+
 }
